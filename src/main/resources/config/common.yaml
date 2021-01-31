@@ -1,7 +1,7 @@
 api:
-  name: "reliable-messaging"
+  name: "compress-decompress-example"
   version: "1.0.0"
   
 template:
  logger:
-  package: "org.mulesoft.templates"
+  package: "org.mulesoft.example"
