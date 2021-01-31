@@ -13,5 +13,5 @@ Send a json message to the end-point https://localhost:8082/api/enqueue
 
 ex:-
 {
-  "files/csv.txt": "File,is, great"
+  "message": "Mule 4 is great!!"
 }
