@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:compression="http://www.mulesoft.org/schema/mule/compression"
+	xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:anypoint-mq="http://www.mulesoft.org/schema/mule/anypoint-mq"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/compression http://www.mulesoft.org/schema/mule/compression/current/mule-compression.xsd">
+
+	<sub-flow name="compress-decompress-implementation-post-enqueue" doc:id="97af57ad-e1b1-4eb0-b973-7d5d7cd57ebe">
+		<!--  <compression:compress doc:name="Compress" doc:id="b812f962-55e8-43ab-a466-bab2524abed7" outputMimeType="application/binary" outputEncoding="UTF-16">
+			<compression:compressor>
+				<compression:gzip-compressor />
+			</compression:compressor>
+		</compression:compress> -->
+		<compression:compress doc:name="Compress" doc:id="f9933c96-d6ad-4e98-9f87-1b29b4ae9318" >
+			<compression:compressor >
+				<compression:zip-compressor />
+			</compression:compressor>
+		</compression:compress>
+		<ee:transform doc:name="From Binary to Base64" doc:id="8300e8e8-ef76-4acc-b367-5d24803c44fd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+import toBase64 from dw::core::Binaries
+---
+toBase64(payload)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<anypoint-mq:publish doc:name="Publish" doc:id="1734fabb-a944-4440-bf2c-d62d1820a694" config-ref="Anypoint_MQ_Config" destination="${amq.processQ}" >
+		</anypoint-mq:publish>
+		<ee:transform doc:name="Enqueue response" doc:id="a6c00a72-f0e7-4c4e-953b-2da9f0692e2c">
+			<ee:message>
+				<ee:set-payload resource="transformations/postEnqueueResponse.dwl" />
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+	<flow name="compress-decompress-implementation-subscriber-flow" doc:id="a16bcfe9-5de9-4475-9d76-f1d716155c89">
+		<anypoint-mq:subscriber doc:name="Subscriber" doc:id="a855ef52-840c-4c9c-8f87-b4164975a610" config-ref="Anypoint_MQ_Config" destination="${amq.processQ}" acknowledgementTimeout="${amq.AcktimeoutInSecs}" acknowledgementTimeoutUnit="MINUTES">
+			<repeatable-in-memory-stream />
+		</anypoint-mq:subscriber>
+		<ee:transform doc:name="From Base64 To Binary" doc:id="3391d6f7-5741-4669-83a3-1564ee02ec93" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+import fromBase64 from dw::core::Binaries
+---
+fromBase64(payload)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<compression:decompress doc:name="Decompress" doc:id="8fd62e68-71df-433d-b548-1e5cb9373230" outputEncoding="UTF-16">
+			<repeatable-in-memory-stream />
+			<compression:decompressor >
+				<compression:zip-decompressor />
+			</compression:decompressor>
+		</compression:decompress>
+		<logger level="INFO" doc:name="Logger" doc:id="03d61ba8-e250-40ee-ae05-e920ab1f4bec" message="#[payload]"/>
+		<error-handler ref="compress-decompress-error-handler-message-consumption">
+
+
+		</error-handler>
+	</flow>
+	<sub-flow
+		name="compress-decompress-implementation-get-healthcheck"
+		doc:id="2ab2ee4b-0a76-4dee-836b-6656206ce471">
+		<ee:transform doc:name="Healthcheck response"
+			doc:id="7363e54e-f531-4628-81b6-929091a23629">
+			<ee:message>
+				<ee:set-payload
+					resource="transformations/getHealthcheckResponse.dwl" />
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+	
+</mule>

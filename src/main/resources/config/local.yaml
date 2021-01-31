@@ -1,0 +1,13 @@
+http:
+  host: "0.0.0.0"
+  port: "8081"
+  
+https:
+  host: "0.0.0.0"
+  port: "8082"
+  
+amq:
+  endpoint: "https://mq-us-west-2.anypoint.mulesoft.com/api/v1"
+  processQ: "processQ"
+  AcktimeoutInSecs: "30"
+  
