@@ -1,5 +1,5 @@
 # compress-decompress-example
-Example application to showcase Mule 4 Compression Module and Base64<->Binary Conversion.
+Example application to showcase Mule 4 Compression Module and Base64 <-> Binary conversion.
 
 **Before you run:**
 
@@ -9,9 +9,13 @@ Example application to showcase Mule 4 Compression Module and Base64<->Binary Co
 
 **How to run:**
 
-Send a json message to the end-point https://localhost:8082/api/enqueue
+1) Send a json message to the end-point https://localhost:8082/api/enqueue
+
+It will be compressed and sent to AMQ. Another flow will read the message, decompress and print it in Console.
 
 ex:-
 {
-  "message": "Mule 4 Compression is great!!"
+  "message": "Mule 4 is great!!"
 }
+
+2) Send a .zip file using PostMan as binary file to the end-point https://localhost:8082/api/enqueueFile. The file will be decompressed and printed in console. 

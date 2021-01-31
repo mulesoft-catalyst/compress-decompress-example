@@ -39,6 +39,32 @@ toBase64(payload)]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 	</sub-flow>
+	
+	<sub-flow name="compress-decompress-implementation-post-enqueueFile" doc:id="59e04bdb-6321-4367-a2dd-8cd51cf22f71">
+		<!--  <compression:compress doc:name="Compress" doc:id="f90b94a9-0e1e-4a3c-be6e-bf85ad9892b5" outputMimeType="application/binary" outputEncoding="UTF-16">
+			<compression:compressor>
+				<compression:gzip-compressor />
+			</compression:compressor>
+		</compression:compress> -->
+		<ee:transform doc:name="From Binary to Base64" doc:id="7b6b7541-c77d-4e6e-97c6-a1aa9e5be1db" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+import toBase64 from dw::core::Binaries
+---
+toBase64(payload)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<anypoint-mq:publish doc:name="Publish" doc:id="7ca6309d-2b5a-4dae-bad3-951da5558989" config-ref="Anypoint_MQ_Config" destination="${amq.processQ}" >
+		</anypoint-mq:publish>
+		<ee:transform doc:name="Enqueue response" doc:id="b7d57fb3-b1c6-44a3-b494-d33470f242fd">
+			<ee:message>
+				<ee:set-payload resource="transformations/postEnqueueResponse.dwl" />
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+	
+	
 	<flow name="compress-decompress-implementation-subscriber-flow" doc:id="a16bcfe9-5de9-4475-9d76-f1d716155c89">
 		<anypoint-mq:subscriber doc:name="Subscriber" doc:id="a855ef52-840c-4c9c-8f87-b4164975a610" config-ref="Anypoint_MQ_Config" destination="${amq.processQ}" acknowledgementTimeout="${amq.AcktimeoutInSecs}" acknowledgementTimeoutUnit="MINUTES">
 			<repeatable-in-memory-stream />

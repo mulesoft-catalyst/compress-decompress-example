@@ -1,9 +1,16 @@
 #%RAML 1.0
-title: Reliable Messaging API
-description: Reliable Messaging API
+title: Compress Decompress Example API
+description: Compress Decompress Example API
 
 
 /enqueue:
+  post:
+    responses:
+      202:
+        body:
+          application/json:
+          
+/enqueueFile:
   post:
     responses:
       202:

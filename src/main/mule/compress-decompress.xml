@@ -52,4 +52,11 @@
 			name="compress-decompress-implementation-post-enqueue" />
 	</flow>
 	
+	<flow name="post:\enqueueFile:compress-decompress-config">
+		<flow-ref
+			doc:name="compress-decompress-post-enqueueFile"
+			doc:id="70cb7d12-9371-45e8-bdbc-64d63baf7008"
+			name="compress-decompress-implementation-post-enqueueFile" />
+	</flow>
+	
 </mule>
