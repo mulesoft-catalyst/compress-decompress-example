@@ -79,7 +79,6 @@ fromBase64(payload)]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 		<compression:decompress doc:name="Decompress" doc:id="8fd62e68-71df-433d-b548-1e5cb9373230" outputEncoding="UTF-16">
-			<repeatable-in-memory-stream />
 			<compression:decompressor >
 				<compression:zip-decompressor />
 			</compression:decompressor>
