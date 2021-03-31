@@ -18,4 +18,9 @@ ex:-
   "message": "Mule 4 is great!!"
 }
 
-2) Send a .zip file using PostMan as binary file to the end-point https://localhost:8082/api/enqueueFile. The file will be decompressed and printed in console. 
+2) Send a .zip file using PostMan as binary file to the end-point https://localhost:8082/api/enqueueFile. The file will be decompressed and printed in console.
+
+
+**Note:**
+
+Please consider a relevant streaming strategy when processing huge zip files. Refer to https://docs.mulesoft.com/mule-runtime/4.3/streaming-strategies-reference for more information.
